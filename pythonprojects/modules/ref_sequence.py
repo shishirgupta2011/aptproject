@@ -3,7 +3,9 @@ import tempfile
 import shutil
 import zipfile
 import re
+import sys
 from sys import argv
+
 
 def createNewDocxFromOld(originalDocx, xmlContent, newFilename):
     tmpDir = tempfile.mkdtemp()
@@ -78,11 +80,9 @@ def refreorder(docx_file):
     file_xml = re.sub('&lt;bib id="bib([0-9]+)([a-z]*?)"(.*?&gt;&lt;number&gt;)\W*?\w+\W*?(&lt;/number&gt;)',
                       lambda m: '&lt;bib id="bib'+m.group(1) +m.group(2)+'"'+m.group(3) + '[' + m.group(1) + ']'+m.group(4) if (
                                   m.group(1) + m.group(2)).isdigit() else '&lt;bib id="bib'+m.group(1)+ m.group(2)+'"' +m.group(3)  + m.group(2) + ')'+m.group(4) , file_xml)
-    createNewDocxFromOld(docx_file, file_xml.encode(), docx_file.lower().replace(".docx", "-output.docx"))
-    print("process done")
+    createNewDocxFromOld(docx_file, bytes(file_xml, 'UTF-8'), docx_file.lower().replace(".docx", "-output.docx"))
+    print("Process Done")
 
-if __name__=="__main__":
-    try:
-        refreorder(argv[1]) if len(argv)>1 else print("No File exists")
-    except Exception as e:
-        print(e)
+
+
+refreorder(argv[1])
